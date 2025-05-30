@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планер</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <!-- Главное содержимое -->
+    <div class="main-content">
+        <!-- Шапка -->
+        <div class="header">
+            <div class="header-actions">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Поиск задач...">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="filter-container">
+                    <button class="filter-btn">
+                        <i class="fas fa-filter"></i>
+                        Фильтр
+                    </button>
+                    <div class="filter-dropdown">
+                        <div class="filter-option" data-label="work">
+                            <span class="task-label work"></span>
+                            Работа
+                        </div>
+                        <div class="filter-option" data-label="study">
+                            <span class="task-label study"></span>
+                            Учёба
+                        </div>
+                        <div class="filter-option" data-label="unknown">
+                            <span class="task-label unknown"></span>
+                            Неизвестно
+                        </div>
+                    </div>
+                    <div class="selected-filters"></div>
+                </div>
+                <button id="openTaskModal" class="add-task-btn">
+                    <i class="fas fa-plus"></i>
+                    Добавить задачу
+                </button>
+            </div>
+        </div>
+
+        <!-- Расширенное окно задачи -->
+        <div class="task-details">
+            <p class="empty-state">Нажмите на задачу, чтобы увидеть подробности</p>
+        </div>
+
+        <!-- Колонки задач -->
+        <div class="task-columns">
+            <div class="task-column pink">
+                <h4>Сделать</h4>
+            </div>
+            <div class="task-column blue">
+                <h4>В прогрессе</h4>
+            </div>
+            <div class="task-column green">
+                <h4>Завершено</h4>
+            </div>
+            <div class="task-column purple">
+                <h4>Без фильтра</h4>
+            </div>
+        </div>
+
+        <!-- Модальное окно -->
+        <div id="taskModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3 id="modalTitle">Создать новую задачу</h3>
+                <form id="taskForm">
+                    <input type="hidden" id="taskId">
+                    <label>Название задачи:
+                        <input type="text" id="taskTitle" required>
+                    </label>
+                    <label>Описание:
+                        <textarea id="taskDescription"></textarea>
+                    </label>
+                    <label>Метка:
+                        <select id="taskLabel" class="label-select">
+                            <option value="unknown" selected>Неизвестно</option>
+                            <option value="work">Работа</option>
+                            <option value="study">Учёба</option>
+                        </select>
+                    </label>
+                    <label>Срок выполнения:
+                        <input type="date" id="taskDueDate" required>
+                    </label>
+                    <label>Группа:
+                        <select id="taskGroup">
+                            <option value="Без фильтра" selected>Без фильтра</option>
+                            <option value="Сделать">Сделать</option>
+                            <option value="В прогрессе">В прогрессе</option>
+                            <option value="Завершено">Завершено</option>
+                        </select>
+                    </label>
+                    <p><small>Дата создания: <span id="autoCreateDate"></span></small></p>
+                    <button type="submit" id="submitTask">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
