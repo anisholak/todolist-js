@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расписание дня</title>
+    <title>Р Р°СЃРїРёСЃР°РЅРёРµ РґРЅСЏ</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="schedule.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -14,19 +14,19 @@
             <div class="header-left">
                 <a href="index.html" class="home-btn">
                     <i class="fas fa-tasks"></i>
-                    Задачи
+                    РџР»Р°РЅРµСЂ
                 </a>
             </div>
             <div class="header-actions">
                 <button class="add-event-btn">
                     <i class="fas fa-plus"></i>
-                    Добавить событие
+                    Р”РѕР±Р°РІРёС‚СЊ СЃРѕР±С‹С‚РёРµ
                 </button>
                 <div class="date-navigation">
                     <button class="prev-day">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <span class="current-date">Сегодня</span>
+                    <span class="current-date">РЎРµРіРѕРґРЅСЏ</span>
                     <button class="next-day">
                         <i class="fas fa-chevron-right"></i>
                     </button>
@@ -36,51 +36,51 @@
 
         <div class="schedule-container">
             <div class="time-slots">
-                <!-- Временные слоты будут добавлены через JavaScript -->
+                <!-- Р’СЂРµРјРµРЅРЅС‹Рµ СЃР»РѕС‚С‹ Р±СѓРґСѓС‚ РґРѕР±Р°РІР»РµРЅС‹ С‡РµСЂРµР· JavaScript -->
             </div>
             <div class="events-container">
-                <!-- События будут добавлены через JavaScript -->
+                <!-- РЎРѕР±С‹С‚РёСЏ Р±СѓРґСѓС‚ РґРѕР±Р°РІР»РµРЅС‹ С‡РµСЂРµР· JavaScript -->
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно для добавления/редактирования события -->
+    <!-- РњРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ/СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃРѕР±С‹С‚РёСЏ -->
     <div id="eventModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h3 id="modalTitle">Добавить событие</h3>
+            <h3 id="modalTitle">Р”РѕР±Р°РІРёС‚СЊ СЃРѕР±С‹С‚РёРµ</h3>
             <form id="eventForm">
                 <label>
-                    Название события
+                    РќР°Р·РІР°РЅРёРµ СЃРѕР±С‹С‚РёСЏ
                     <input type="text" id="eventTitle" required>
                 </label>
                 <label>
-                    Время начала
+                    Р’СЂРµРјСЏ РЅР°С‡Р°Р»Р°
                     <input type="time" id="eventStartTime" required>
                 </label>
                 <label>
-                    Время окончания
+                    Р’СЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ
                     <input type="time" id="eventEndTime" required>
                 </label>
                 <label>
-                    Описание
+                    РћРїРёСЃР°РЅРёРµ
                     <textarea id="eventDescription"></textarea>
                 </label>
                 <label>
-                    Цвет
+                    Р¦РІРµС‚
                     <select id="eventColor">
-                        <option value="blue">Синий</option>
-                        <option value="green">Зеленый</option>
-                        <option value="red">Красный</option>
-                        <option value="purple">Фиолетовый</option>
-                        <option value="orange">Оранжевый</option>
+                        <option value="blue">РЎРёРЅРёР№</option>
+                        <option value="green">Р—РµР»РµРЅС‹Р№</option>
+                        <option value="red">РљСЂР°СЃРЅС‹Р№</option>
+                        <option value="purple">Р¤РёРѕР»РµС‚РѕРІС‹Р№</option>
+                        <option value="orange">РћСЂР°РЅР¶РµРІС‹Р№</option>
                     </select>
                 </label>
-                <button type="submit">Сохранить</button>
+                <button type="submit">РЎРѕС…СЂР°РЅРёС‚СЊ</button>
             </form>
         </div>
     </div>
 
     <script src="schedule.js"></script>
 </body>
-</html> 
+</html>

@@ -1,29 +1,29 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Инициализация хранилища событий
+document.addEventListener('DOMContentLoaded', function() {
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С…СЂР°РЅРёР»РёС‰Р° СЃРѕР±С‹С‚РёР№
     function initializeEventsStorage() {
         if (!localStorage.getItem('events')) {
             localStorage.setItem('events', JSON.stringify([]));
         }
     }
 
-    // Получение всех событий
+    // РџРѕР»СѓС‡РµРЅРёРµ РІСЃРµС… СЃРѕР±С‹С‚РёР№
     function getAllEvents() {
         return JSON.parse(localStorage.getItem('events')) || [];
     }
 
-    // Сохранение всех событий
+    // РЎРѕС…СЂР°РЅРµРЅРёРµ РІСЃРµС… СЃРѕР±С‹С‚РёР№
     function saveAllEvents(events) {
         localStorage.setItem('events', JSON.stringify(events));
     }
 
-    // Добавление нового события
+    // Р”РѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ СЃРѕР±С‹С‚РёСЏ
     function addEvent(event) {
         const events = getAllEvents();
         events.push(event);
         saveAllEvents(events);
     }
 
-    // Обновление события
+    // РћР±РЅРѕРІР»РµРЅРёРµ СЃРѕР±С‹С‚РёСЏ
     function updateEvent(eventId, updatedData) {
         const events = getAllEvents();
         const eventIndex = events.findIndex(e => e.id === eventId);
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return false;
     }
 
-    // Удаление события
+    // РЈРґР°Р»РµРЅРёРµ СЃРѕР±С‹С‚РёСЏ
     function deleteEvent(eventId) {
         const events = getAllEvents();
         const updatedEvents = events.filter(e => e.id !== eventId);
@@ -43,10 +43,10 @@ document.addEventListener('DOMContentLoaded', function () {
         renderEvents();
     }
 
-    // Инициализация хранилища
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С…СЂР°РЅРёР»РёС‰Р°
     initializeEventsStorage();
 
-    // Элементы DOM
+    // РџРѕР»СѓС‡РµРЅРёРµ DOM-СЌР»РµРјРµРЅС‚РѕРІ
     const modal = document.getElementById('eventModal');
     const addEventBtn = document.querySelector('.add-event-btn');
     const closeBtn = document.querySelector('.close');
@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const prevDayBtn = document.querySelector('.prev-day');
     const nextDayBtn = document.querySelector('.next-day');
 
-    // Текущая дата
+    // РўРµРєСѓС‰Р°СЏ РґР°С‚Р°
     let currentDate = new Date();
 
-    // Создание временных слотов
+    // РЎРѕР·РґР°РЅРёРµ РІСЂРµРјРµРЅРЅС‹С… СЃР»РѕС‚РѕРІ
     function createTimeSlots() {
         timeSlots.innerHTML = '';
         for (let hour = 0; hour < 24; hour++) {
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Форматирование даты
+    // Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ РґР°С‚С‹
     function formatDate(date) {
         return date.toLocaleDateString('ru-RU', {
             weekday: 'long',
@@ -80,17 +80,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Обновление отображения текущей даты
+    // РћР±РЅРѕРІР»РµРЅРёРµ РѕС‚РѕР±СЂР°Р¶Р°РµРјРѕР№ РґР°С‚С‹
     function updateCurrentDate() {
         currentDateSpan.textContent = formatDate(currentDate);
     }
 
-    // Создание элемента события
+    // РЎРѕР·РґР°РЅРёРµ СЌР»РµРјРµРЅС‚Р° СЃРѕР±С‹С‚РёСЏ
     function createEventElement(event) {
         const eventElement = document.createElement('div');
         eventElement.className = `event ${event.color}`;
-        eventElement.style.top = `${(parseInt(event.startTime.split(':')[0]) * 60)}px`;
+        eventElement.style.top = `${(parseInt(event.startTime.split(':')[0])) * 60}px`;
         eventElement.style.height = `${(parseInt(event.endTime.split(':')[0]) - parseInt(event.startTime.split(':')[0])) * 60}px`;
+        eventElement.setAttribute('data-event-id', event.id);
 
         eventElement.innerHTML = `
             <div class="event-title">${event.title}</div>
@@ -98,13 +99,13 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="event-description">${event.description || ''}</div>
         `;
 
-        // Добавляем обработчики событий
+        // Р”РѕР±Р°РІР»РµРЅРёРµ РѕР±СЂР°Р±РѕС‚С‡РёРєР° РєР»РёРєР° РґР»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
         eventElement.addEventListener('click', () => openEditModal(event));
 
         return eventElement;
     }
 
-    // Отрисовка событий
+    // РћС‚РѕР±СЂР°Р¶РµРЅРёРµ СЃРѕР±С‹С‚РёР№
     function renderEvents() {
         eventsContainer.innerHTML = '';
         const events = getAllEvents();
@@ -118,18 +119,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Открытие модального окна для добавления события
+    // РћС‚РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ СЃРѕР±С‹С‚РёСЏ
     function openAddModal() {
         const modalTitle = document.getElementById('modalTitle');
-        modalTitle.textContent = 'Добавить событие';
+        modalTitle.textContent = 'Р”РѕР±Р°РІРёС‚СЊ СЃРѕР±С‹С‚РёРµ';
         eventForm.reset();
         modal.style.display = 'block';
     }
 
-    // Открытие модального окна для редактирования события
+    // РћС‚РєСЂС‹С‚РёРµ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРЅР° РґР»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ СЃРѕР±С‹С‚РёСЏ
     function openEditModal(event) {
         const modalTitle = document.getElementById('modalTitle');
-        modalTitle.textContent = 'Редактировать событие';
+        modalTitle.textContent = 'Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ СЃРѕР±С‹С‚РёРµ';
 
         document.getElementById('eventTitle').value = event.title;
         document.getElementById('eventStartTime').value = event.startTime;
@@ -141,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.style.display = 'block';
     }
 
-    // Обработчики событий
+    // РћР±СЂР°Р±РѕС‚С‡РёРєРё СЃРѕР±С‹С‚РёР№
     addEventBtn.addEventListener('click', openAddModal);
 
     closeBtn.addEventListener('click', () => {
@@ -196,8 +197,8 @@ document.addEventListener('DOMContentLoaded', function () {
         renderEvents();
     });
 
-    // Инициализация
+    // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
     createTimeSlots();
     updateCurrentDate();
     renderEvents();
-}); 
+});
