@@ -1,3 +1,15 @@
+// После загрузки DOM
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEventsStorage();
+    createTimeSlots();
+    updateCurrentDate();
+    renderEvents();
+    
+    // Первоначальная синхронизация высот
+    const timeSlots = document.querySelector('.time-slots');
+    const eventsContent = document.querySelector('.events-content');
+    timeSlots.style.height = `${eventsContent.offsetHeight}px`;
+});
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация хранилища
     function initializeEventsStorage() {
@@ -83,31 +95,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Создание элемента события
     function createEventElement(event) {
-        const eventElement = document.createElement('div');
-        eventElement.className = `event ${event.color}`;
-        
-        const startMinutes = parseInt(event.startTime.split(':')[0]) * 60 + parseInt(event.startTime.split(':')[1]);
-        const endMinutes = parseInt(event.endTime.split(':')[0]) * 60 + parseInt(event.endTime.split(':')[1]);
-        
-        eventElement.style.top = `${startMinutes}px`;
-        eventElement.style.height = `${endMinutes - startMinutes}px`;
-        eventElement.setAttribute('data-event-id', event.id);
-
-        eventElement.innerHTML = `
-            <div class="event-title">${event.title}</div>
-            <div class="event-time">${event.startTime} - ${event.endTime}</div>
-            <div class="event-description">${event.description || ''}</div>
-        `;
-
-        eventElement.addEventListener('click', () => openEditModal(event));
-        return eventElement;
-    }
+    const eventElement = document.createElement('div');
+    eventElement.className = `event ${event.color}`;
+    
+    const startMinutes = parseInt(event.startTime.split(':')[0]) * 60 + 
+                        parseInt(event.startTime.split(':')[1]);
+    const durationMinutes = (parseInt(event.endTime.split(':')[0]) * 60 + 
+                          parseInt(event.endTime.split(':')[1])) - startMinutes;
+    
+    eventElement.style.top = `${startMinutes}px`;
+    eventElement.style.height = `${durationMinutes}px`;
+    eventElement.style.position = 'absolute'; // Важно: absolute внутри relative контейнера
+    
+    eventElement.innerHTML = `
+        <div class="event-title">${event.title}</div>
+        <div class="event-time">${event.startTime} - ${event.endTime}</div>
+        ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
+    `;
+    
+    return eventElement;
+}
 
     // Отрисовка событий
     function renderEvents() {
         eventsContainer.innerHTML = '';
         const events = getAllEvents();
         const currentDateStr = currentDate.toISOString().split('T')[0];
+
+        // Создаем общий контейнер для событий с высотой 1440px (24 часа * 60 минут)
+        const eventsContent = document.createElement('div');
+        eventsContent.className = 'events-content';
+        eventsContent.style.height = '1440px'; // Фиксированная высота для 24 часов
 
         events.forEach(event => {
             const eventDateStr = new Date(event.date).toISOString().split('T')[0];
@@ -119,10 +137,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Синхронизация скролла
     function syncScroll() {
+        const timeSlots = document.querySelector('.time-slots');
+        const eventsContainer = document.querySelector('.events-container');
+    
         eventsContainer.addEventListener('scroll', () => {
             timeSlots.scrollTop = eventsContainer.scrollTop;
         });
-
+    
         timeSlots.addEventListener('scroll', () => {
             eventsContainer.scrollTop = timeSlots.scrollTop;
         });
