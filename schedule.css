@@ -254,4 +254,23 @@
   .events-container {
     height: 100%;
   }
+
+  .event {
+    position: absolute;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* Убираем правый отступ у последнего события в группе */
+  .event:last-child {
+    margin-right: 0;
+  }
+
+  /* Подсвечиваем событие при наведении */
+  .event:hover {
+    z-index: 10 !important;
+    transform: scale(1.02);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
 }

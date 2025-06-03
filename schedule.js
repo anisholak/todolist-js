@@ -93,46 +93,89 @@ document.addEventListener('DOMContentLoaded', function() {
         currentDateSpan.textContent = formatDate(currentDate);
     }
 
-    // Создание элемента события
-    function createEventElement(event) {
-    const eventElement = document.createElement('div');
-    eventElement.className = `event ${event.color}`;
+    // Создает элемент события с учетом пересечений
+    function createEventElement(event, totalInGroup, indexInGroup) {
+        const eventElement = document.createElement('div');
+        eventElement.className = `event ${event.color}`;
     
-    const startMinutes = parseInt(event.startTime.split(':')[0]) * 60 + 
-                        parseInt(event.startTime.split(':')[1]);
-    const durationMinutes = (parseInt(event.endTime.split(':')[0]) * 60 + 
-                          parseInt(event.endTime.split(':')[1])) - startMinutes;
+        const startMinutes = timeToMinutes(event.startTime);
+        const endMinutes = timeToMinutes(event.endTime);
     
-    eventElement.style.top = `${startMinutes}px`;
-    eventElement.style.height = `${durationMinutes}px`;
-    eventElement.style.position = 'absolute'; // Важно: absolute внутри relative контейнера
+        // Рассчитываем ширину и позицию
+        const width = 100 / totalInGroup;
+        const left = width * indexInGroup;
     
-    eventElement.innerHTML = `
-        <div class="event-title">${event.title}</div>
-        <div class="event-time">${event.startTime} - ${event.endTime}</div>
-        ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
-    `;
+        eventElement.style.top = `${startMinutes}px`;
+        eventElement.style.height = `${endMinutes - startMinutes}px`;
+        eventElement.style.width = `calc(${width}% - 20px)`;
+        eventElement.style.left = `calc(${left}% + 10px)`;
     
-    return eventElement;
-}
+        eventElement.innerHTML = `
+            <div class="event-title">${event.title}</div>
+            <div class="event-time">${event.startTime} - ${event.endTime}</div>
+            ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
+        `;
+    
+        return eventElement;
+    }
 
     // Отрисовка событий
     function renderEvents() {
         eventsContainer.innerHTML = '';
         const events = getAllEvents();
         const currentDateStr = currentDate.toISOString().split('T')[0];
-
-        // Создаем общий контейнер для событий с высотой 1440px (24 часа * 60 минут)
         const eventsContent = document.createElement('div');
         eventsContent.className = 'events-content';
-        eventsContent.style.height = '1440px'; // Фиксированная высота для 24 часов
+        eventsContent.style.height = '1440px';
 
-        events.forEach(event => {
+        // Фильтруем события для текущего дня
+        const todayEvents = events.filter(event => {
             const eventDateStr = new Date(event.date).toISOString().split('T')[0];
-            if (eventDateStr === currentDateStr) {
-                eventsContainer.appendChild(createEventElement(event));
-            }
+            return eventDateStr === currentDateStr;
         });
+
+        // Группируем пересекающиеся события
+        const overlappingGroups = findOverlappingEvents(todayEvents);
+
+        // Рендерим события с учетом пересечений
+        overlappingGroups.forEach(group => {
+            group.forEach((event, index) => {
+                const eventElement = createEventElement(event, group.length, index);
+                eventsContent.appendChild(eventElement);
+            });
+        });
+
+        eventsContainer.appendChild(eventsContent);
+        syncScroll();
+    }
+
+    // Находит пересекающиеся события
+    function findOverlappingEvents(events) {
+        if (events.length === 0) return [];
+    
+        // Сортируем события по времени начала
+        const sortedEvents = [...events].sort((a, b) => {
+            return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
+        });
+
+        const groups = [];
+        let currentGroup = [sortedEvents[0]];
+
+        for (let i = 1; i < sortedEvents.length; i++) {
+            const lastEvent = currentGroup[currentGroup.length - 1];
+            const currentEvent = sortedEvents[i];
+
+            // Проверяем пересечение времени
+            if (timeToMinutes(currentEvent.startTime) < timeToMinutes(lastEvent.endTime)) {
+                currentGroup.push(currentEvent);
+            } else {
+                groups.push(currentGroup);
+                currentGroup = [currentEvent];
+            }
+        }
+
+        groups.push(currentGroup);
+        return groups;
     }
 
     // Синхронизация скролла
@@ -215,4 +258,9 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCurrentDate();
         renderEvents();
     });
+
+    function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
 });
