@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание дня</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="schedule.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <a href="index.html" class="home-btn">
+                    <i class="fas fa-tasks"></i>
+                    Задачи
+                </a>
+            </div>
+            <div class="header-actions">
+                <button class="add-event-btn">
+                    <i class="fas fa-plus"></i>
+                    Добавить событие
+                </button>
+                <div class="date-navigation">
+                    <button class="prev-day">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="current-date">Сегодня</span>
+                    <button class="next-day">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="schedule-container">
+            <div class="time-slots">
+                <!-- Временные слоты будут добавлены через JavaScript -->
+            </div>
+            <div class="events-container">
+                <!-- События будут добавлены через JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления/редактирования события -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modalTitle">Добавить событие</h3>
+            <form id="eventForm">
+                <label>
+                    Название события
+                    <input type="text" id="eventTitle" required>
+                </label>
+                <label>
+                    Время начала
+                    <input type="time" id="eventStartTime" required>
+                </label>
+                <label>
+                    Время окончания
+                    <input type="time" id="eventEndTime" required>
+                </label>
+                <label>
+                    Описание
+                    <textarea id="eventDescription"></textarea>
+                </label>
+                <label>
+                    Цвет
+                    <select id="eventColor">
+                        <option value="blue">Синий</option>
+                        <option value="green">Зеленый</option>
+                        <option value="red">Красный</option>
+                        <option value="purple">Фиолетовый</option>
+                        <option value="orange">Оранжевый</option>
+                    </select>
+                </label>
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="schedule.js"></script>
+</body>
+</html> 
