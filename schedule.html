@@ -54,18 +54,28 @@
                     Название события
                     <input type="text" id="eventTitle" required>
                 </label>
-                <label>
-                    Время начала
-                    <input type="time" id="eventStartTime" required>
-                </label>
+
+                <div class="form-row">
+                    <label>
+                        Дата события
+                        <input type="date" id="eventDate" required>
+                    </label>
+                    <label>
+                        Время начала
+                        <input type="time" id="eventStartTime" required>
+                    </label>
+                </div>
+
                 <label>
                     Время окончания
                     <input type="time" id="eventEndTime" required>
                 </label>
+
                 <label>
-                    Описание
+                    Описание (необязательно)
                     <textarea id="eventDescription"></textarea>
                 </label>
+
                 <label>
                     Цвет
                     <select id="eventColor">
@@ -76,6 +86,13 @@
                         <option value="orange">Оранжевый</option>
                     </select>
                 </label>
+
+                <div class="quick-dates">
+                    <button type="button" data-days="0">Сегодня</button>
+                    <button type="button" data-days="1">Завтра</button>
+                    <button type="button" data-days="7">Через неделю</button>
+                </div>
+
                 <button type="submit">Сохранить</button>
             </form>
         </div>

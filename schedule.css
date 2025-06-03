@@ -23,6 +23,39 @@
   position: relative;
 }
 
+/* Стили для строки с датой и временем */
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row label {
+    flex: 1;
+}
+
+/* Стили для быстрого выбора дат */
+.quick-dates {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.quick-dates button {
+    flex: 1;
+    padding: 8px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quick-dates button:hover {
+    background: #e0e0e0;
+}
+
+
 /* Колонка с временными слотами */
 .time-slots {
   width: 80px;
@@ -226,12 +259,26 @@
 }
 
 /* Адаптивность */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .schedule-container {
     flex-direction: column;
     height: calc(100vh - 200px);
   }
 
+  .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .quick-dates {
+        flex-wrap: wrap;
+    }
+    
+    .quick-dates button {
+        flex: none;
+        width: calc(50% - 5px);
+    }
+    
   .time-slots {
     width: 100%;
     height: auto;

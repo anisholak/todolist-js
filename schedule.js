@@ -55,6 +55,15 @@ document.addEventListener('DOMContentLoaded', function() {
         renderEvents();
     }
 
+    document.querySelectorAll('.quick-dates button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const daysToAdd = parseInt(this.dataset.days);
+            const date = new Date();
+            date.setDate(date.getDate() + daysToAdd);
+            document.getElementById('eventDate').value = date.toISOString().split('T')[0];
+        });
+    });
+
     // DOM-элементы
     const modal = document.getElementById('eventModal');
     const addEventBtn = document.querySelector('.add-event-btn');
@@ -201,19 +210,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Открытие модального окна
     function openAddModal() {
-        document.getElementById('modalTitle').textContent = 'Добавить событие';
-        eventForm.reset();
+        const today = new Date();
+        const dateInput = document.getElementById('eventDate');
+        const startTimeInput = document.getElementById('eventStartTime');
+        const endTimeInput = document.getElementById('eventEndTime');
+    
+        // Установка значений по умолчанию
+        dateInput.value = today.toISOString().split('T')[0];
+    
+        // Установка времени (текущий час + 1, продолжительность 1 час)
+        const nextHour = today.getHours() + 1;
+        startTimeInput.value = `${nextHour.toString().padStart(2, '0')}:00`;
+        endTimeInput.value = `${(nextHour + 1).toString().padStart(2, '0')}:00`;
+    
+        // Сброс остальных полей
+        document.getElementById('eventTitle').value = '';
+        document.getElementById('eventDescription').value = '';
+        document.getElementById('eventColor').value = 'blue';
+    
         modal.style.display = 'block';
     }
 
     // Редактирование события
     function openEditModal(event) {
         document.getElementById('modalTitle').textContent = 'Редактировать событие';
+    
+        // Установка значений из события
         document.getElementById('eventTitle').value = event.title;
+        document.getElementById('eventDate').value = new Date(event.date).toISOString().split('T')[0];
         document.getElementById('eventStartTime').value = event.startTime;
         document.getElementById('eventEndTime').value = event.endTime;
         document.getElementById('eventDescription').value = event.description || '';
         document.getElementById('eventColor').value = event.color;
+    
         modal.setAttribute('data-editing-event', event.id);
         modal.style.display = 'block';
     }
@@ -230,26 +259,35 @@ document.addEventListener('DOMContentLoaded', function() {
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     window.addEventListener('click', (e) => e.target === modal && (modal.style.display = 'none'));
 
-    eventForm.addEventListener('submit', (e) => {
+    eventForm.addEventListener('submit', function(e) {
         e.preventDefault();
+    
+        // Валидация времени
+        const startTime = document.getElementById('eventStartTime').value;
+        const endTime = document.getElementById('eventEndTime').value;
+    
+        if (startTime >= endTime) {
+            alert('Время окончания должно быть позже времени начала!');
+            return;
+        }
+    
         const eventData = {
             title: document.getElementById('eventTitle').value,
-            startTime: document.getElementById('eventStartTime').value,
-            endTime: document.getElementById('eventEndTime').value,
+            date: document.getElementById('eventDate').value,
+            startTime: startTime,
+            endTime: endTime,
             description: document.getElementById('eventDescription').value,
-            color: document.getElementById('eventColor').value,
-            date: currentDate.toISOString()
+            color: document.getElementById('eventColor').value
         };
-
-        const isEditing = modal.hasAttribute('data-editing-event');
-        if (isEditing) {
-            const eventId = modal.getAttribute('data-editing-event');
-            updateEvent(eventId, eventData);
+    
+        // Добавление/обновление события
+        if (modal.hasAttribute('data-editing-event')) {
+            updateEvent(modal.getAttribute('data-editing-event'), eventData);
         } else {
             eventData.id = `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             addEvent(eventData);
-        }
-
+        }   
+    
         modal.style.display = 'none';
         renderEvents();
     });
