@@ -26,11 +26,10 @@
 /* Колонка с временными слотами */
 .time-slots {
   width: 80px;
-  border-right: 1px solid var(--border-color);
-  background: var(--background-color);
-  position: relative;
-  z-index: 2;
-  height: 1440px; /* 24 часа × 60 минут */
+    border-right: 1px solid var(--border-color);
+    background: var(--background-color);
+    position: relative;
+    overflow: hidden !important;
 }
 
 .time-slot {
@@ -243,6 +242,11 @@
     padding: 5px 0;
   }
 
+  .time-slots-container {
+    position: relative;
+    height: 1440px;
+  }
+
   .time-slot {
     width: 60px;
     height: auto;
@@ -252,7 +256,10 @@
   }
 
   .events-container {
-    height: 100%;
+    flex: 1;
+    overflow-y: auto !important;
+    position: relative;
+    scroll-behavior: smooth;
   }
 
   .event {

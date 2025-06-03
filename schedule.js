@@ -71,12 +71,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Создание временных слотов
     function createTimeSlots() {
         timeSlots.innerHTML = '';
+        const timeSlotsContainer = document.createElement('div');
+        timeSlotsContainer.className = 'time-slots-container';
+        timeSlotsContainer.style.height = '1440px'; // 24 часа в минутах
+    
         for (let hour = 0; hour < 24; hour++) {
             const timeSlot = document.createElement('div');
             timeSlot.className = 'time-slot';
             timeSlot.textContent = `${hour.toString().padStart(2, '0')}:00`;
-            timeSlots.appendChild(timeSlot);
+            timeSlotsContainer.appendChild(timeSlot);
         }
+    
+        timeSlots.appendChild(timeSlotsContainer);
     }
 
     // Форматирование даты
@@ -183,12 +189,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const timeSlots = document.querySelector('.time-slots');
         const eventsContainer = document.querySelector('.events-container');
     
+        // Только контейнер событий должен скроллиться
+        eventsContainer.style.overflowY = 'auto';
+        timeSlots.style.overflowY = 'hidden'; // Отключаем скролл у времени
+    
+        // Синхронизируем положение времени при скролле событий
         eventsContainer.addEventListener('scroll', () => {
             timeSlots.scrollTop = eventsContainer.scrollTop;
-        });
-    
-        timeSlots.addEventListener('scroll', () => {
-            eventsContainer.scrollTop = timeSlots.scrollTop;
         });
     }
 
