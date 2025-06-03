@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация хранилища событий
+    // Инициализация хранилища
     function initializeEventsStorage() {
         if (!localStorage.getItem('events')) {
             localStorage.setItem('events', JSON.stringify([]));
@@ -11,12 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return JSON.parse(localStorage.getItem('events')) || [];
     }
 
-    // Сохранение всех событий
+    // Сохранение событий
     function saveAllEvents(events) {
         localStorage.setItem('events', JSON.stringify(events));
     }
 
-    // Добавление нового события
+    // Добавление события
     function addEvent(event) {
         const events = getAllEvents();
         events.push(event);
@@ -43,10 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderEvents();
     }
 
-    // Инициализация хранилища
-    initializeEventsStorage();
-
-    // Получение DOM-элементов
+    // DOM-элементы
     const modal = document.getElementById('eventModal');
     const addEventBtn = document.querySelector('.add-event-btn');
     const closeBtn = document.querySelector('.close');
@@ -57,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevDayBtn = document.querySelector('.prev-day');
     const nextDayBtn = document.querySelector('.next-day');
 
-    // Текущая дата
     let currentDate = new Date();
 
     // Создание временных слотов
@@ -89,8 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function createEventElement(event) {
         const eventElement = document.createElement('div');
         eventElement.className = `event ${event.color}`;
-        eventElement.style.top = `${(parseInt(event.startTime.split(':')[0])) * 60}px`;
-        eventElement.style.height = `${(parseInt(event.endTime.split(':')[0]) - parseInt(event.startTime.split(':')[0])) * 60}px`;
+        
+        const startMinutes = parseInt(event.startTime.split(':')[0]) * 60 + parseInt(event.startTime.split(':')[1]);
+        const endMinutes = parseInt(event.endTime.split(':')[0]) * 60 + parseInt(event.endTime.split(':')[1]);
+        
+        eventElement.style.top = `${startMinutes}px`;
+        eventElement.style.height = `${endMinutes - startMinutes}px`;
         eventElement.setAttribute('data-event-id', event.id);
 
         eventElement.innerHTML = `
@@ -99,67 +99,68 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="event-description">${event.description || ''}</div>
         `;
 
-        // Добавление обработчика клика для редактирования
         eventElement.addEventListener('click', () => openEditModal(event));
-
         return eventElement;
     }
 
-    // Отображение событий
+    // Отрисовка событий
     function renderEvents() {
         eventsContainer.innerHTML = '';
         const events = getAllEvents();
-        const currentDateStr = currentDate.toDateString();
+        const currentDateStr = currentDate.toISOString().split('T')[0];
 
         events.forEach(event => {
-            if (new Date(event.date).toDateString() === currentDateStr) {
-                const eventElement = createEventElement(event);
-                eventsContainer.appendChild(eventElement);
+            const eventDateStr = new Date(event.date).toISOString().split('T')[0];
+            if (eventDateStr === currentDateStr) {
+                eventsContainer.appendChild(createEventElement(event));
             }
         });
     }
 
-    // Открытие модального окна для добавления события
+    // Синхронизация скролла
+    function syncScroll() {
+        eventsContainer.addEventListener('scroll', () => {
+            timeSlots.scrollTop = eventsContainer.scrollTop;
+        });
+
+        timeSlots.addEventListener('scroll', () => {
+            eventsContainer.scrollTop = timeSlots.scrollTop;
+        });
+    }
+
+    // Открытие модального окна
     function openAddModal() {
-        const modalTitle = document.getElementById('modalTitle');
-        modalTitle.textContent = 'Добавить событие';
+        document.getElementById('modalTitle').textContent = 'Добавить событие';
         eventForm.reset();
         modal.style.display = 'block';
     }
 
-    // Открытие модального окна для редактирования события
+    // Редактирование события
     function openEditModal(event) {
-        const modalTitle = document.getElementById('modalTitle');
-        modalTitle.textContent = 'Редактировать событие';
-
+        document.getElementById('modalTitle').textContent = 'Редактировать событие';
         document.getElementById('eventTitle').value = event.title;
         document.getElementById('eventStartTime').value = event.startTime;
         document.getElementById('eventEndTime').value = event.endTime;
         document.getElementById('eventDescription').value = event.description || '';
         document.getElementById('eventColor').value = event.color;
-
         modal.setAttribute('data-editing-event', event.id);
         modal.style.display = 'block';
     }
 
+    // Инициализация
+    initializeEventsStorage();
+    createTimeSlots();
+    updateCurrentDate();
+    renderEvents();
+    syncScroll();
+
     // Обработчики событий
     addEventBtn.addEventListener('click', openAddModal);
-
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-        modal.removeAttribute('data-editing-event');
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-            modal.removeAttribute('data-editing-event');
-        }
-    });
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => e.target === modal && (modal.style.display = 'none'));
 
     eventForm.addEventListener('submit', (e) => {
         e.preventDefault();
-
         const eventData = {
             title: document.getElementById('eventTitle').value,
             startTime: document.getElementById('eventStartTime').value,
@@ -170,10 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         const isEditing = modal.hasAttribute('data-editing-event');
-
         if (isEditing) {
             const eventId = modal.getAttribute('data-editing-event');
-            eventData.id = eventId;
             updateEvent(eventId, eventData);
         } else {
             eventData.id = `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -181,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         modal.style.display = 'none';
-        modal.removeAttribute('data-editing-event');
         renderEvents();
     });
 
@@ -196,9 +194,4 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCurrentDate();
         renderEvents();
     });
-
-    // Инициализация
-    createTimeSlots();
-    updateCurrentDate();
-    renderEvents();
 });
