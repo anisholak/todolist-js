@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function showTaskDetails(details, data) {
         details.classList.add('loading');
-        
+
         setTimeout(() => {
             details.innerHTML = `
                 <div class="task-details-header">
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Добавляем обработчик для кнопки закрытия
             const closeButton = details.querySelector('.close-details');
             if (closeButton) {
-                closeButton.addEventListener('click', function() {
+                closeButton.addEventListener('click', function () {
                     hideTaskDetails(details);
                 });
             }
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Добавляем обработчик для кнопки редактирования
             const editButton = details.querySelector('.edit-details-btn');
             if (editButton) {
-                editButton.addEventListener('click', function() {
+                editButton.addEventListener('click', function () {
                     // Находим карточку задачи по заголовку
                     const taskCard = document.querySelector(`.task-card[data-title="${data.title}"]`);
                     if (taskCard) {
@@ -181,11 +181,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function hideTaskDetails(details) {
         details.classList.add('loading');
-        
+
         setTimeout(() => {
             details.innerHTML = `
                 <div class="task-details-header">
-                    <h3>ПРИМЕР</h3>
+                    <h3></h3>
                     <button class="close-details" style="display: none;"><i class="fas fa-times"></i></button>
                 </div>
                 <p class="empty-state">Нажмите на задачу, чтобы увидеть подробности</p>
@@ -199,11 +199,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const card = document.createElement("div");
         card.className = "task-card";
         card.id = taskData.id || `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
+
         if (taskData.completed) {
             card.classList.add('completed');
         }
-        
+
         // Добавляем data-атрибуты
         card.setAttribute("data-id", card.id);
         card.setAttribute("data-title", taskData.title);
@@ -212,11 +212,11 @@ document.addEventListener("DOMContentLoaded", function () {
         card.setAttribute("data-description", taskData.description);
         card.setAttribute("data-label", taskData.label);
         card.setAttribute("data-group", taskData.group);
-        
+
         // Создаем содержимое карточки
         const cardContent = document.createElement("div");
         cardContent.className = "task-card-content";
-        
+
         // Создаем метку
         const labelsDiv = document.createElement("div");
         labelsDiv.className = "task-labels";
@@ -224,20 +224,23 @@ document.addEventListener("DOMContentLoaded", function () {
         label.className = `task-label ${taskData.label || 'unknown'}`;
         label.textContent = getLabelText(taskData.label || 'unknown');
         labelsDiv.appendChild(label);
-        
+
         // Форматируем дату для отображения
         const formattedDueDate = formatDate(taskData.dueDate);
-        
+
+        // Ограничиваем длину заголовка
+        const title = taskData.title.length > 30 ? taskData.title.substring(0, 30) + '...' : taskData.title;
+
         cardContent.innerHTML = `
-            <h5>${taskData.title}</h5>
-            <p class="description">${(taskData.description || '').substring(0, 30)}...</p>
+            <h5>${title}</h5>
+            <p class="description">${taskData.description || ''}</p>
             <p class="due-date"><small>Срок: ${formattedDueDate}</small></p>
         `;
 
         // Создаем кнопки действий
         const actions = document.createElement("div");
         actions.className = "task-card-actions";
-        
+
         actions.innerHTML = `
             <button class="edit-btn" title="Редактировать задачу">
                 <i class="fas fa-edit"></i>
@@ -253,7 +256,7 @@ document.addEventListener("DOMContentLoaded", function () {
         card.appendChild(actions);
 
         // Добавляем обработчики событий
-        cardContent.addEventListener("click", function(e) {
+        cardContent.addEventListener("click", function (e) {
             if (!e.target.closest('.task-card-actions')) {
                 const data = {
                     title: card.getAttribute('data-title'),
@@ -269,7 +272,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Обработчик для кнопки редактирования
         const editBtn = actions.querySelector('.edit-btn');
         if (editBtn) {
-            editBtn.addEventListener("click", function(e) {
+            editBtn.addEventListener("click", function (e) {
                 e.stopPropagation();
                 openEditModal(card);
             });
@@ -278,7 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Обработчик для кнопки удаления
         const deleteBtn = actions.querySelector('.delete-btn');
         if (deleteBtn) {
-            deleteBtn.addEventListener("click", function(e) {
+            deleteBtn.addEventListener("click", function (e) {
                 e.stopPropagation();
                 if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
                     if (!isStatic) {
@@ -332,12 +335,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Инициализируем drag and drop для новых карточек
         initializeDragAndDrop();
+
+        // Применяем текущий фильтр после рендеринга
+        const activeFilter = document.querySelector('.status-filter.active');
+        if (activeFilter) {
+            filterTasksByStatus(activeFilter.dataset.status);
+        }
     }
 
     // Обновляем функцию initializeStaticCards
     function initializeStaticCards() {
         const tasks = getAllTasks();
-        
+
         renderTasks();
     }
 
@@ -369,18 +378,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Обработчик отправки формы
     taskForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        
+
         const modal = document.getElementById('taskModal');
         const isEditing = modal.hasAttribute('data-editing-card');
-        
+
         // Получаем значение метки или устанавливаем "unknown" по умолчанию
         const labelSelect = document.getElementById("taskLabel");
         const selectedLabel = labelSelect.value || "unknown";
-        
+
         // Получаем значение группы или устанавливаем "Без фильтра" по умолчанию
         const groupSelect = document.getElementById("taskGroup");
         const selectedGroup = groupSelect.value || "Без фильтра";
-        
+
         const taskData = {
             title: document.getElementById("taskTitle").value.trim(),
             description: document.getElementById("taskDescription").value.trim(),
@@ -423,19 +432,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         cards.forEach(card => {
             card.setAttribute('draggable', true);
-            
-            card.addEventListener('dragstart', function(e) {
+
+            card.addEventListener('dragstart', function (e) {
                 e.dataTransfer.setData('text/plain', card.id);
                 card.classList.add('dragging');
             });
 
-            card.addEventListener('dragend', function(e) {
+            card.addEventListener('dragend', function (e) {
                 card.classList.remove('dragging');
             });
         });
 
         columns.forEach(column => {
-            column.addEventListener('dragover', function(e) {
+            column.addEventListener('dragover', function (e) {
                 e.preventDefault();
                 const draggingCard = document.querySelector('.dragging');
                 if (draggingCard) {
@@ -458,7 +467,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            column.addEventListener('drop', function(e) {
+            column.addEventListener('drop', function (e) {
                 e.preventDefault();
                 const cardId = e.dataTransfer.getData('text/plain');
                 const card = document.getElementById(cardId);
@@ -482,7 +491,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const taskTitle = card.getAttribute('data-title');
         const tasks = getAllTasks();
         const taskIndex = tasks.findIndex(t => t.title === taskTitle);
-        
+
         if (taskIndex !== -1) {
             tasks[taskIndex].group = newStatus;
             tasks[taskIndex].completed = newStatus === 'Завершено';
@@ -547,14 +556,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Обработчик для закрытия модального окна
-    document.querySelector('.close').addEventListener('click', function() {
+    document.querySelector('.close').addEventListener('click', function () {
         const modal = document.getElementById('taskModal');
         modal.style.display = 'none';
         document.getElementById('taskForm').reset();
     });
 
     // Закрытие модального окна при клике вне его
-    window.addEventListener('click', function(e) {
+    window.addEventListener('click', function (e) {
         const modal = document.getElementById('taskModal');
         if (e.target === modal) {
             modal.style.display = 'none';
@@ -562,16 +571,49 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Добавляем обработчик для кнопки поиска
-    document.querySelector('.search-btn').addEventListener('click', function() {
-        const searchInput = document.querySelector('.search-input');
-        const searchTerm = searchInput.value.trim().toLowerCase();
+    // Добавляем обработчик для предотвращения отправки формы при нажатии Enter
+    document.querySelector('.search-input').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            // Принудительно вызываем событие input для обновления отображения
+            this.dispatchEvent(new Event('input'));
+        }
+    });
+
+    // Добавляем обработчик для поиска в реальном времени
+    document.querySelector('.search-input').addEventListener('input', function () {
+        const searchTerm = this.value.trim().toLowerCase();
         const tasks = document.querySelectorAll('.task-card');
-        
+
+        // Сначала сбрасываем все стили отображения
+        tasks.forEach(task => {
+            task.style.display = '';
+        });
+
+        if (searchTerm === '') {
+            // Убираем подсветку
+            document.querySelectorAll('.highlight').forEach(el => {
+                const parent = el.parentNode;
+                parent.textContent = parent.textContent;
+            });
+
+            // Применяем текущий активный фильтр по статусу
+            const activeFilter = document.querySelector('.status-filter.active');
+            if (activeFilter) {
+                filterTasksByStatus(activeFilter.dataset.status);
+            } else {
+                // Если нет активного фильтра, показываем все задачи
+                tasks.forEach(task => {
+                    task.style.display = 'block';
+                });
+            }
+            return;
+        }
+
         tasks.forEach(task => {
             const title = task.getAttribute('data-title').toLowerCase();
             const description = task.getAttribute('data-description').toLowerCase();
-            
+
             if (title.includes(searchTerm) || description.includes(searchTerm)) {
                 task.style.display = 'block';
                 // Подсвечиваем найденный текст
@@ -579,7 +621,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (content) {
                     const titleElement = content.querySelector('h5');
                     const descElement = content.querySelector('.description');
-                    
+
                     if (titleElement && searchTerm) {
                         const titleText = titleElement.textContent;
                         const highlightedTitle = titleText.replace(
@@ -588,7 +630,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
                         titleElement.innerHTML = highlightedTitle;
                     }
-                    
+
                     if (descElement && searchTerm) {
                         const descText = descElement.textContent;
                         const highlightedDesc = descText.replace(
@@ -604,25 +646,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Добавляем обработчик для очистки поиска
-    document.querySelector('.search-input').addEventListener('input', function() {
-        if (this.value.trim() === '') {
-            // Убираем подсветку
-            document.querySelectorAll('.highlight').forEach(el => {
-                const parent = el.parentNode;
-                parent.textContent = parent.textContent;
+    // Добавляем обработчики для фильтрации по статусу
+    document.querySelectorAll('.status-filter').forEach(button => {
+        button.addEventListener('click', () => {
+            // Убираем активный класс у всех кнопок
+            document.querySelectorAll('.status-filter').forEach(btn => {
+                btn.classList.remove('active');
             });
-            // Показываем все задачи
-            document.querySelectorAll('.task-card').forEach(task => {
-                task.style.display = 'block';
-            });
-        }
+            // Добавляем активный класс нажатой кнопке
+            button.classList.add('active');
+
+            const status = button.dataset.status;
+            filterTasksByStatus(status);
+        });
     });
 
-    // Добавляем обработчик для поиска по Enter
-    document.querySelector('.search-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            document.querySelector('.search-btn').click();
-        }
-    });
+    // Функция фильтрации задач по статусу
+    function filterTasksByStatus(status) {
+        const tasks = document.querySelectorAll('.task-card');
+
+        tasks.forEach(task => {
+            const isCompleted = task.classList.contains('completed') || task.closest('.task-column.green') !== null;
+
+            switch (status) {
+                case 'all':
+                    task.style.display = '';
+                    break;
+                case 'active':
+                    task.style.display = isCompleted ? 'none' : '';
+                    break;
+                case 'completed':
+                    task.style.display = isCompleted ? '' : 'none';
+                    break;
+            }
+        });
+    }
 });

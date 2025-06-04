@@ -13,12 +13,20 @@
     <div class="main-content">
         <!-- Шапка -->
         <div class="header">
+            <div class="header-left">
+                <a href="schedule.html" class="schedule-btn">
+                    <i class="fas fa-calendar-alt"></i>
+                    Расписание
+                </a>
+            </div>
             <div class="header-actions">
+                <div class="status-filters">
+                    <button class="status-filter active" data-status="all">Все</button>
+                    <button class="status-filter" data-status="active">Активные</button>
+                    <button class="status-filter" data-status="completed">Завершенные</button>
+                </div>
                 <div class="search-container">
                     <input type="text" class="search-input" placeholder="Поиск задач...">
-                    <button class="search-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
                 </div>
                 <div class="filter-container">
                     <button class="filter-btn">
@@ -76,23 +84,28 @@
                 <h3 id="modalTitle">Создать новую задачу</h3>
                 <form id="taskForm">
                     <input type="hidden" id="taskId">
-                    <label>Название задачи:
+                    <label>
+                        Название задачи:
                         <input type="text" id="taskTitle" required>
                     </label>
-                    <label>Описание:
+                    <label>
+                        Описание:
                         <textarea id="taskDescription"></textarea>
                     </label>
-                    <label>Метка:
+                    <label>
+                        Метка:
                         <select id="taskLabel" class="label-select">
                             <option value="unknown" selected>Неизвестно</option>
                             <option value="work">Работа</option>
                             <option value="study">Учёба</option>
                         </select>
                     </label>
-                    <label>Срок выполнения:
+                    <label>
+                        Срок выполнения:
                         <input type="date" id="taskDueDate" required>
                     </label>
-                    <label>Группа:
+                    <label>
+                        Группа:
                         <select id="taskGroup">
                             <option value="Без фильтра" selected>Без фильтра</option>
                             <option value="Сделать">Сделать</option>
